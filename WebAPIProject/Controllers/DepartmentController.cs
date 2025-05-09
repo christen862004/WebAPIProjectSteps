@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
+using WebAPIProject.Dto;
 using WebAPIProject.Models;
 
 namespace WebAPIProject.Controllers
@@ -15,23 +17,50 @@ namespace WebAPIProject.Controllers
         [HttpGet]
         public IActionResult ShowAll()
         {
-            List<Department> departmentList = context.Departments.ToList();
+            //repository
+            IEnumerable<DeptWithEmpCountDTO> departmentList =
+                context.Departments.Include(d => d.Emps)
+                .Select(d => new DeptWithEmpCountDTO() {
+                    DeptId = d.Id, DeptName = d.Name, EmpCount = d.Emps.Count()
+                }).ToList();//
             
             return Ok(departmentList);//reponse statis code 200 ,body 
         }
 
+
         //api/Department/1   GET 
         [HttpGet("{did:int}")]//3 sigment
-        public IActionResult FindbyID(int did)
+        public ActionResult<GeneralResponse> FindbyID(int did)
         {
             Department dept = context.Departments.FirstOrDefault(d => d.Id == did);
             if (dept != null)
-                return Ok(dept);
+                return new GeneralResponse() { IsPass=true,Data=dept};
             else
-                return BadRequest("Invalid id");
+                return new GeneralResponse() { IsPass=false,Data="Invalid ID"};
         }
        
         
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         [HttpGet("{name:alpha}")]//api/department/ahmed
         public IActionResult GetByName(string name)
         {
@@ -73,6 +102,7 @@ namespace WebAPIProject.Controllers
                 return NoContent();
             }
             return BadRequest(ModelState);
+            //return new GeneralResponse() { IsPass = false,statuse=500 ,Data = ModelState };
         }
         #endregion
 

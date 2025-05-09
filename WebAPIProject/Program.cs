@@ -9,7 +9,17 @@ namespace WebAPIProject
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .ConfigureApiBehaviorOptions(options=>options.SuppressModelStateInvalidFilter=true);
+
+            builder.Services.AddCors(corsoptions =>
+            {
+                corsoptions.AddPolicy("MyPolicy", policy =>
+                {
+                    policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
+                });
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -22,9 +32,12 @@ namespace WebAPIProject
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            //app.UseRouting();//middleware deafult one
-            app.UseAuthorization();
+            app.UseStaticFiles(); //url ==>wwwroot handel
 
+            //app.UseRouting();//middleware deafult one
+            app.UseCors("MyPolicy");
+
+            app.UseAuthorization();
 
             app.MapControllers();
 
