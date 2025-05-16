@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
@@ -15,6 +16,7 @@ namespace WebAPIProject.Controllers
         //CRUD ==>Departem
         #region api/Department   GET 
         [HttpGet]
+        [Authorize]//check Valid Token
         public IActionResult ShowAll()
         {
             //repository
